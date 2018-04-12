@@ -8,6 +8,11 @@ module.exports = (client) => (req, res) => {
         Object.keys(data.headers || {}).forEach(key => {
             res.header(key, data.headers[key]);
         });
+        if(data.err) {
+            res.status(503);
+        } else {
+            res.status(data.status || 200);
+        }
         res.send(data.body);
     });
 };

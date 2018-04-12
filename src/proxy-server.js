@@ -26,12 +26,14 @@ module.exports = (port, target) => {
                             ws.send(JSON.stringify(Object.assign({}, {}, {
                                 id: req.id,
                                 clientId: req.clientId,
+                                status: 500,
                                 body: err.message
                             })));
                         } else {
                             ws.send(JSON.stringify(Object.assign({}, {}, {
                                 id: req.id,
                                 clientId: req.clientId,
+                                status: response.status,
                                 body: body
                             })));
                         }
@@ -40,6 +42,7 @@ module.exports = (port, target) => {
                     ws.send(JSON.stringify(Object.assign({}, {}, {
                         id: req.id,
                         clientId: req.clientId,
+                        status: 500,
                         body: err.message
                     })));
                 }

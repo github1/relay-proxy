@@ -7,6 +7,9 @@ module.exports = (address, handler) => {
     rws.addEventListener('message', data => {
         handler(JSON.parse(data.data));
     });
+    rws.onerror = err => {
+        handler({err: err.message});
+    };
     return {
         send(data) {
             rws.send(JSON.stringify(data));
