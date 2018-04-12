@@ -6,24 +6,26 @@ const validRequestOpts = {
 };
 
 describe('client creation', () => {
-    it('sends things with a socket', () => {
-        const socket = { send: jest.fn() };
-        const socketFactory = () => socket;
-        const instance = client.createClient({
-            address: 'ws://foo.com',
-            socketFactory: socketFactory
+    const fakeHandler = (resp) => (req, handler) => {
+        handler(resp);
+    };
+    it('sends and receives outbound requests through a socket', () => {
+        expect.assertions(1);
+        return new Promise((resolve) => {
+            const instance = client.createClient({
+                inboundHandler: fakeHandler({ path: '/ib' }),
+                outboundSender: fakeHandler({ path: '/ob' })
+            });
+            instance
+                .send(validRequestOpts, resp => {
+                    expect(resp.path).toBe('/ob');
+                    resolve();
+                });
         });
-        instance
-            .send(validRequestOpts);
-        expect(socket.send.mock.calls.length).toBe(1);
     });
 });
 
 describe('when creating a request', () => {
-    it('generates a unique request id', () => {
-        expect(client.createRequest(validRequestOpts).id)
-            .not.toBe(client.createRequest(validRequestOpts).id);
-    });
     it('requires a path to be set', () => {
         expect.assertions(1);
         try {
@@ -36,7 +38,7 @@ describe('when creating a request', () => {
     it('requires a headers to be set', () => {
         expect.assertions(1);
         try {
-            client.createRequest({ path: '/' });
+            client.createRequest({path: '/'});
         } catch (e) {
             expect(e.message)
                 .toContain('Missing required option "headers"');

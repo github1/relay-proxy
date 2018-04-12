@@ -1,4 +1,4 @@
-module.exports = (client) => (req, res) => {
+module.exports = client => (req, res) => {
     client.send({
         path: req.path,
         headers: req.headers,

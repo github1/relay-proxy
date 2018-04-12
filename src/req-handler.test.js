@@ -2,14 +2,13 @@ const reqHandler = require('./req-handler');
 const clientCreator = require('./client');
 
 describe('request handler', () => {
+    const fakeHandler = (resp) => (req, handler) => {
+        resp.id = req.id;
+        handler(resp);
+    };
     const fakeClient = response => clientCreator.createClient({
-        address: 'ws://',
-        socketFactory: (address, handler) => ({
-            send: request => {
-                response.id = request.id;
-                handler(response);
-            }
-        })
+        outboundSender: fakeHandler(response),
+        inboundHandler: fakeHandler({})
     });
     it('it receives ', () => {
         expect.assertions(2);
@@ -23,6 +22,7 @@ describe('request handler', () => {
               header: (name, value) => {
                   headersSet[name] = value;
               },
+              status: () => {},
               send: body => {
                   expect(headersSet['x-foo']).toBe('bar');
                   expect(body).toBe('someBody');
