@@ -17,6 +17,7 @@
     "express-ws": "^3.0.0",
     "get-port": "^3.2.0",
     "html5-websocket": "^2.0.2",
+    "https-proxy-agent": "^2.2.1",
     "jest": "^22.4.3",
     "normalize-url": "^2.0.1",
     "reconnecting-websocket": "^3.2.2",
