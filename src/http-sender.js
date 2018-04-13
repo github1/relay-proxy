@@ -2,7 +2,15 @@ const normalizeURL = require('normalize-url');
 const url = require('url');
 const request = require('request');
 
+const prepareRequest = () => {
+    if(process.env.HTTP_PROXY) {
+        return request.defaults({'proxy': process.env.HTTP_PROXY});
+    }
+    return request;
+};
+
 module.exports = target => {
+    const r = prepareRequest();
     return (req, receiver) => {
         const opts = {
             url: normalizeURL([target, req.path].join('/')),
@@ -13,7 +21,7 @@ module.exports = target => {
         if (/post/i.test(req.method)) {
             opts.body = req.body;
         }
-        request(opts, (err, response, body) => {
+        r(opts, (err, response, body) => {
             if(err) {
                 receiver(Object.assign({}, {}, {
                     id: req.id,
